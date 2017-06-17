@@ -20,7 +20,7 @@
 ;; define the ring application
 (def app
   (-> (handler/api app-routes)
-      (wrap-json-body)
-      (wrap-json-params)
-      (wrap-json-response)))
+      wrap-json-body
+      wrap-json-params
+      wrap-json-response))
 
