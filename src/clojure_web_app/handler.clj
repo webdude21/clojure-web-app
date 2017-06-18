@@ -15,7 +15,7 @@
             [environ.core :refer [env]]
             [ring.middleware.defaults :refer [wrap-defaults site-defaults]]))
 
-(def production true)
+(def production (or (env :production) false))
 
 (defn location-by-ip [ip]
   (json/read-str ((client/get (format "http://freegeoip.net/json/%s" ip)) :body) :key-fn keyword))
@@ -25,15 +25,15 @@
     ((client/get "http://fuelo.net/api/near" {:query-params {:key      (env :fuelo-api-key)
                                                              :lat      lat
                                                              :lon      lon
-                                                             :limit    limit
-                                                             :distance distance
-                                                             :fuel     fuel}}) :body)))
+                                                             :limit    (or limit "10")
+                                                             :distance (or distance "10")
+                                                             :fuel     (or fuel "lpg")}}) :body)))
 (defroutes app-routes
            (GET "/user/:id" [id greeting]
              {:body {:userId   id
                      :greeting greeting}})
            (GET "/print-query-params" [& args] (response args))
-           (GET "/cheapest-near-me" [limit distance fuel]
+           (GET "/fuel-near-me" [limit distance fuel]
              (fn [request]
                (let [location (location-by-ip (if production
                                                 ((:headers request) "x-forwarded-for")
