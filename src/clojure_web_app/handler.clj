@@ -36,8 +36,7 @@
            (GET "/cheapest-near-me" [limit distance fuel]
              (fn [request]
                (let [location (location-by-ip (if production
-                                                (do (println (:headers request))
-                                                    ((:headers request) "x_forwarded_for"))
+                                                ((:headers request) "x-forwarded-for")
                                                 (:remote-addr request)))]
                  (response (nearby-fuel-prices (location :latitude) (location :longitude) limit distance fuel)))))
            (GET "/my-location" []
