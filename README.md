@@ -1,6 +1,6 @@
 # clojure-web-app
 
-FIXME
+Try out web development with clojure
 
 ## Prerequisites
 
@@ -14,6 +14,6 @@ To start a web server for the application, run:
 
     lein ring server
 
-## License
+## Deployed
 
-Copyright © 2017 FIXME
+[on heroku]: http://clojure-web-app.herokuapp.com/cheapest-near-me
