@@ -1,57 +1,34 @@
 (ns clojure-web-app.handler
   (:require [compojure.core :refer :all]
+            [clojure-web-app.fuel-services :as service]
             [ring.middleware.json :refer [wrap-json-response]]
             [ring.middleware.json :refer [wrap-json-body]]
-            [compojure.handler :as handler]
-            [compojure.handler :refer [site]]
             [ring.middleware.json :refer [wrap-json-params]]
             [ring.util.response :refer [response status]]
+            [compojure.handler :as handler]
+            [compojure.handler :refer [site]]
             [compojure.route :as route]
-            [clojure.data.json :as json]
-            [clojure.string :as str]
-            [clojure.java.io :as io]
             [ring.adapter.jetty :as jetty]
-            [clj-http.client :as client]
             [environ.core :refer [env]]
             [ring.middleware.defaults :refer [wrap-defaults site-defaults]]))
 
 (def production (or (env :production) false))
-
-(defn location-by-ip [ip]
-  (json/read-str ((client/get (format "http://freegeoip.net/json/%s" ip)) :body) :key-fn keyword))
 
 (defn get-ip-from [request]
   (if production
     ((:headers request) "x-forwarded-for")
     (:remote-addr request)))
 
-(defn nearby-fuel-prices [lat lon limit distance fuel]
-  (json/read-str
-    ((client/get "http://fuelo.net/api/near" {:query-params {:key      (env :fuelo-api-key)
-                                                             :lat      lat
-                                                             :lon      lon
-                                                             :limit    (or limit "10")
-                                                             :distance (or distance "10")
-                                                             :fuel     (or fuel "lpg")}}) :body)))
-
 (defroutes app-routes
-           (GET "/user/:id" [id greeting]
-             {:body {:userId   id
-                     :greeting greeting}})
            (GET "/print-query-params" [& args] (response args))
-           (GET "/fuel-near-me" [limit distance fuel]
+           (GET "/fuel-near-me" [lat lon limit distance fuel]
              (fn [request]
-               (let [location (location-by-ip (get-ip-from request))]
-                 (response (nearby-fuel-prices (location :latitude) (location :longitude) limit distance fuel)))))
+               (let [location (service/location-by-ip (get-ip-from request))]
+                 (response (service/nearby-fuel-prices lat lon limit distance fuel location)))))
            (GET "/my-location" []
-             (fn [request] (response (location-by-ip (get-ip-from request)))))
-           (GET "/my-ip" []
-             (fn [request]
-               {:status 200
-                :body   {:requested-by (:remote-addr request)}}))
+             (fn [request] (response (service/location-by-ip (get-ip-from request)))))
            (route/not-found "Not Found"))
 
-;; define the ring application
 (def app
   (-> (handler/api app-routes)
       wrap-json-body
@@ -59,5 +36,5 @@
       wrap-json-response))
 
 (defn -main [& [port]]
-  (let [port (Integer. (or port (env :port) 5000))]
+  (let [port (Integer. (or port (env :port) 3000))]
     (jetty/run-jetty (site #'app) {:port port :join? false})))
