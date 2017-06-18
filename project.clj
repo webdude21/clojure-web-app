@@ -12,7 +12,7 @@
   :plugins [[lein-ring "0.9.7"]
             [lein-environ "1.1.0"]]
   :hooks [environ.leiningen.hooks]
-  :uberjar-name "clojure-web-app-SNAPSHOT-standalone.jar"
+  :uberjar-name "clojure-web-app-standalone.jar"
   :ring {:handler clojure-web-app.handler/app}
   :profiles
   {:dev {:dependencies [[javax.servlet/servlet-api "2.5"]

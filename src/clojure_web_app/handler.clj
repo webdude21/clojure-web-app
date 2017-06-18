@@ -3,10 +3,13 @@
             [ring.middleware.json :refer [wrap-json-response]]
             [ring.middleware.json :refer [wrap-json-body]]
             [compojure.handler :as handler]
+            [compojure.handler :refer [site]]
             [ring.middleware.json :refer [wrap-json-params]]
             [ring.util.response :refer [response status]]
             [compojure.route :as route]
             [clojure.data.json :as json]
+            [clojure.java.io :as io]
+            [ring.adapter.jetty :as jetty]
             [clj-http.client :as client]
             [environ.core :refer [env]]
             [ring.middleware.defaults :refer [wrap-defaults site-defaults]]))
@@ -45,3 +48,7 @@
       wrap-json-body
       wrap-json-params
       wrap-json-response))
+
+(defn -main [& [port]]
+  (let [port (Integer. (or port (env :port) 5000))]
+    (jetty/run-jetty (site #'app) {:port port :join? false})))
