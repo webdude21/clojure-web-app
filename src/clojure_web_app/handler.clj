@@ -8,11 +8,14 @@
             [ring.util.response :refer [response status]]
             [compojure.route :as route]
             [clojure.data.json :as json]
+            [clojure.string :as str]
             [clojure.java.io :as io]
             [ring.adapter.jetty :as jetty]
             [clj-http.client :as client]
             [environ.core :refer [env]]
             [ring.middleware.defaults :refer [wrap-defaults site-defaults]]))
+
+(def production (or (env :production) false))
 
 (defn location-by-ip [ip]
   (json/read-str ((client/get (format "http://freegeoip.net/json/%s" ip)) :body) :key-fn keyword))
@@ -32,10 +35,14 @@
            (GET "/print-query-params" [& args] (response args))
            (GET "/cheapest-near-me" [limit distance fuel]
              (fn [request]
-               (let [location (location-by-ip (:remote-addr request))]
+               (let [location (location-by-ip (if production
+                                                ((:headers request) "http_x_forwarded_for")
+                                                (:remote-addr request)))]
                  (response (nearby-fuel-prices (location :latitude) (location :longitude) limit distance fuel)))))
            (GET "/my-location" []
-             (fn [request] (response (location-by-ip (:remote-addr request)))))
+             (fn [request] (response (location-by-ip (if production
+                                                       ((:headers request) "http_x_forwarded_for")
+                                                       (:remote-addr request))))))
            (GET "/my-ip" []
              (fn [request]
                {:status 200
