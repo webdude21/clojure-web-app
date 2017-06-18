@@ -1,4 +1,4 @@
-const services = (function (fetch, URL, BASE_URL, geoLocation) {
+const services = (function (fetch, URL, BASE_URL) {
 
     const prepareQuery = function (url, params) {
         const urlObject = new URL(url);
@@ -15,4 +15,4 @@ const services = (function (fetch, URL, BASE_URL, geoLocation) {
             return await rawResult.json();
         }
     }
-}(window.fetch, window.URL, window.location.origin, navigator.geolocation));
+}(window.fetch, window.URL, window.location.origin));
