@@ -16,4 +16,6 @@ To start a web server for the application, run:
 
 ## Deployed
 
-[on heroku]: http://clojure-web-app.herokuapp.com/cheapest-near-me
+It's depolyed on [heroku][]
+
+[heroku]: http://clojure-web-app.herokuapp.com/cheapest-near-me
