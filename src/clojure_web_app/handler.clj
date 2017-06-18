@@ -20,6 +20,11 @@
 (defn location-by-ip [ip]
   (json/read-str ((client/get (format "http://freegeoip.net/json/%s" ip)) :body) :key-fn keyword))
 
+(defn get-ip-from [request]
+  (if production
+    ((:headers request) "x-forwarded-for")
+    (:remote-addr request)))
+
 (defn nearby-fuel-prices [lat lon limit distance fuel]
   (json/read-str
     ((client/get "http://fuelo.net/api/near" {:query-params {:key      (env :fuelo-api-key)
@@ -28,6 +33,7 @@
                                                              :limit    (or limit "10")
                                                              :distance (or distance "10")
                                                              :fuel     (or fuel "lpg")}}) :body)))
+
 (defroutes app-routes
            (GET "/user/:id" [id greeting]
              {:body {:userId   id
@@ -35,14 +41,10 @@
            (GET "/print-query-params" [& args] (response args))
            (GET "/fuel-near-me" [limit distance fuel]
              (fn [request]
-               (let [location (location-by-ip (if production
-                                                ((:headers request) "x-forwarded-for")
-                                                (:remote-addr request)))]
+               (let [location (location-by-ip (get-ip-from request))]
                  (response (nearby-fuel-prices (location :latitude) (location :longitude) limit distance fuel)))))
            (GET "/my-location" []
-             (fn [request] (response (location-by-ip (if production
-                                                       ((:headers request) "x_forwarded_for")
-                                                       (:remote-addr request))))))
+             (fn [request] (response (location-by-ip (get-ip-from request)))))
            (GET "/my-ip" []
              (fn [request]
                {:status 200
