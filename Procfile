@@ -1,0 +1,1 @@
+web: java $JVM_OPTS -cp target/clojure-web-app-SNAPSHOT-standalone.jar clojure.main -m clojure-web-app.handler
