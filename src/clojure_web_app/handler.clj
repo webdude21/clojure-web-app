@@ -15,7 +15,7 @@
             [ring.middleware.defaults :refer [wrap-defaults site-defaults]]))
 
 (defn location-by-ip [ip]
-  (json/read-str ((client/get (format "http://freegeoip.net/json/%s" "github.com")) :body) :key-fn keyword))
+  (json/read-str ((client/get (format "http://freegeoip.net/json/%s" ip)) :body) :key-fn keyword))
 
 (defn nearby-fuel-prices [lat lon limit distance fuel]
   (json/read-str

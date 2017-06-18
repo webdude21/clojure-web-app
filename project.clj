@@ -6,14 +6,15 @@
                  [compojure "1.5.1"]
                  [clj-http "3.6.1"]
                  [environ "1.1.0"]
+                 [ring/ring-jetty-adapter "1.4.0"]
                  [org.clojure/data.json "0.2.6"]
                  [ring/ring-defaults "0.2.1"]
                  [ring/ring-json "0.4.0"]]
   :plugins [[lein-ring "0.9.7"]
             [lein-environ "1.1.0"]]
   :hooks [environ.leiningen.hooks]
-  :uberjar-name "clojure-web-app-standalone.jar"
+  :uberjar-name "clojure-web-app-SNAPSHOT-standalone.jar"
   :ring {:handler clojure-web-app.handler/app}
-  :profiles
+  :profiles {:uberjar {:aot :all}}
   {:dev {:dependencies [[javax.servlet/servlet-api "2.5"]
                         [ring/ring-mock "0.3.0"]]}})
