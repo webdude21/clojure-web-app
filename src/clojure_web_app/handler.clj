@@ -15,7 +15,7 @@
             [environ.core :refer [env]]
             [ring.middleware.defaults :refer [wrap-defaults site-defaults]]))
 
-(def production (or (env :production) false))
+(def production true)
 
 (defn location-by-ip [ip]
   (json/read-str ((client/get (format "http://freegeoip.net/json/%s" ip)) :body) :key-fn keyword))
