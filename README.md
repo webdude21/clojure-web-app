@@ -18,4 +18,4 @@ To start a web server for the application, run:
 
 It's depolyed on [heroku][]
 
-[heroku]: http://clojure-web-app.herokuapp.com/fuel-near-me
+[heroku]: https://clojure-web-app.herokuapp.com/
