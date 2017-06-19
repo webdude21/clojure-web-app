@@ -1,25 +1,42 @@
 (function (services, geoLocation) {
+    const resultBox = document.getElementById("result-box");
+
     const getPosition = function (options) {
         return new Promise(function (resolve, reject) {
             geoLocation.getCurrentPosition(resolve, reject, options);
         });
     };
 
-    const resultBox = document.getElementById("result-box");
-    const locationBtn = document.getElementById("get-location-btn");
-    locationBtn.addEventListener("click", async () => {
-        let result;
+    window.initMap = async function () {
 
+        const {gasstations, lat, lon} = await getNearByGasStations();
+
+        const map = new google.maps.Map(document.getElementById('map'), {
+            zoom: 12,
+            center: {lat: lat, lng: lon}
+        });
+
+        gasstations.forEach(g => toMarkers(g, map));
+        renderResult(resultBox, gasstations)
+    };
+
+    const toMarkers = function ({address, city, distance, name, lat, lon}, map) {
+        return new google.maps.Marker({
+            position: {lat: lat, lng: lon},
+            map: map
+        })
+    };
+
+    const getNearByGasStations = async function () {
         try {
             const {coords: {latitude, longitude}} = await getPosition();
-            result = await services.getNearByGasStations(latitude, longitude);
+            return await services.getNearByGasStations(latitude, longitude);
         } catch (err) {
             console.warn('The user rejected to provide location');
-            result = await services.getNearByGasStations();
-        } finally {
-            renderResult(resultBox, result);
+            return await services.getNearByGasStations();
         }
-    });
+    };
+
 
     const toListItem = function (text) {
         const li = document.createElement('li');
@@ -43,10 +60,10 @@
         return listItem;
     };
 
-    const renderResult = function (elementToRenderIn, {gasstations}) {
+    const renderResult = function (elementToRenderIn, gasStations) {
         const fragment = document.createDocumentFragment('ul');
         elementToRenderIn.innerHTML = '';
-        gasstations.map(listItemMapper).forEach(item => fragment.appendChild(item));
+        gasStations.map(listItemMapper).forEach(item => fragment.appendChild(item));
         elementToRenderIn.appendChild(fragment);
     };
 }(services, navigator.geolocation));
