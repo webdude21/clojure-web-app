@@ -1,5 +1,5 @@
-(function (services, geoLocation) {
-    const resultBox = document.getElementById("result-box");
+(function (services, geoLocation, Map, Marker) {
+    const resultBox = document.getElementById('result-box');
 
     const getPosition = function (options) {
         return new Promise(function (resolve, reject) {
@@ -8,10 +8,8 @@
     };
 
     window.initMap = async function () {
-
         const {gasstations, lat, lon} = await getNearByGasStations();
-
-        const map = new google.maps.Map(document.getElementById('map'), {
+        const map = new Map(document.getElementById('map'), {
             zoom: 12,
             center: {lat: lat, lng: lon}
         });
@@ -21,7 +19,7 @@
     };
 
     const toMarkers = function ({address, city, distance, name, lat, lon}, map) {
-        return new google.maps.Marker({
+        return new Marker({
             position: {lat: lat, lng: lon},
             map: map
         })
@@ -61,9 +59,9 @@
     };
 
     const renderResult = function (elementToRenderIn, gasStations) {
-        const fragment = document.createDocumentFragment('ul');
+        const fragment = document.createDocumentFragment();
         elementToRenderIn.innerHTML = '';
         gasStations.map(listItemMapper).forEach(item => fragment.appendChild(item));
         elementToRenderIn.appendChild(fragment);
     };
-}(services, navigator.geolocation));
+}(services, navigator.geolocation, google.maps.Map, google.maps.Marker));
