@@ -20,6 +20,8 @@
     ((:headers request) "x-forwarded-for")
     (:remote-addr request)))
 
+(def fucks-given 0)
+
 (defroutes app-routes
            (GET "/rest/print-query-params" [& args] (response args))
            (GET "/rest/fuel-near-me" [lat lon limit distance fuel]
@@ -28,6 +30,9 @@
                  (response (service/nearby-fuel-prices lat lon limit distance fuel location)))))
            (GET "/rest/my-location" []
              (fn [request] (response (service/location-by-ip (get-ip-from request)))))
+           (GET "/rest/fuck", [] (fn [req]
+                                   (do (def fucks-given (inc fucks-given))
+                                       {:status 201 :body {:fucksGiven fucks-given}})))
            (GET "/" [] (clojure.java.io/resource "public/index.html"))
            (route/not-found (clojure.java.io/resource "public/404.html")))
 
