@@ -2,10 +2,16 @@
     list-style-type: none;
 }
 
+.list-item ul {
+    padding: 10px;
+    list-style-type: none;
+}
+
 #map {
     width: 100%;
     height: 400px;
 }
+
 html, body {
     height: 100%;
     margin: 0;
