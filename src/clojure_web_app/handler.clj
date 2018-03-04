@@ -1,5 +1,6 @@
 (ns clojure-web-app.handler
   (:require [compojure.core :refer :all]
+            [clojure-web-app.request-utils :refer [get-ip-from]]
             [clojure-web-app.fuel-services :as service]
             [ring.middleware.json :refer [wrap-json-response]]
             [ring.middleware.json :refer [wrap-json-body]]
@@ -12,21 +13,12 @@
             [environ.core :refer [env]]
             [ring.middleware.defaults :refer [wrap-defaults site-defaults]]))
 
-(def production (or (env :production) false))
-
-(defn get-ip-from [request]
-  (if production
-    ((:headers request) "x-forwarded-for")
-    (:remote-addr request)))
-
 (def fucks-given 0)
 
 (defroutes app-routes
-           (GET "/rest/print-query-params" [& args] (response args))
            (GET "/rest/fuel-near-me" [lat lon limit distance fuel]
              (fn [request]
-               (let [location (service/location-by-ip (get-ip-from request))]
-                 (response (service/nearby-fuel-prices lat lon limit distance fuel location)))))
+               (response (service/nearby-fuel-prices lat lon limit distance fuel (get-ip-from request)))))
            (GET "/rest/my-location" []
              (fn [request] (response (service/location-by-ip (get-ip-from request)))))
            (GET "/rest/fuck", [] (fn []
@@ -43,5 +35,5 @@
       (wrap-defaults site-defaults)))
 
 (defn -main [& [port]]
-  (let [port (Integer. (or port (env :port) 3000))]
+  (let [port (or port (env :port) 3000)]
     (jetty/run-jetty (site #'app) {:port port :join? false})))

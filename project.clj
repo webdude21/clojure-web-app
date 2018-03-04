@@ -3,6 +3,7 @@
   :url "https://github.com/webdude21/clojure-web-app"
   :min-lein-version "2.0.0"
   :dependencies [[org.clojure/clojure "1.8.0"]
+                 [org.clojure/tools.logging "0.4.0"]
                  [compojure "1.5.1"]
                  [clj-http "3.6.1"]
                  [environ "1.1.0"]
