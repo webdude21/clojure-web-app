@@ -10,8 +10,7 @@
             [compojure.route :as route]
             [ring.adapter.jetty :as jetty]
             [environ.core :refer [env]]
-            [ring.middleware.defaults :refer [wrap-defaults site-defaults]]
-            [ring.util.response :as resp]))
+            [ring.middleware.defaults :refer [wrap-defaults site-defaults]]))
 
 (def production (or (env :production) false))
 
@@ -30,7 +29,7 @@
                  (response (service/nearby-fuel-prices lat lon limit distance fuel location)))))
            (GET "/rest/my-location" []
              (fn [request] (response (service/location-by-ip (get-ip-from request)))))
-           (GET "/rest/fuck", [] (fn [req]
+           (GET "/rest/fuck", [] (fn []
                                    (do (def fucks-given (inc fucks-given))
                                        {:status 201 :body {:fucksGiven fucks-given}})))
            (GET "/" [] (clojure.java.io/resource "public/index.html"))
