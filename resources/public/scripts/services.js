@@ -9,8 +9,8 @@ const services = (function (fetch, URL, BASE_URL) {
     };
 
     return {
-        async getNearByGasStations(lat, lon, limit = 10, distance = 10, fuel = 'lpg'){
-            const query = prepareQuery(`${BASE_URL}/rest/fuel-near-me`, {lat, lon, limit, distance, fuel});
+        async getNearByGasStations(lat, lon, limit = 10, distance = 10, fuel = 'lpg') {
+            const query = prepareQuery(`${BASE_URL}/rest/fuel-near-me`, { lat, lon, limit, distance, fuel });
             const rawResult = await fetch(query);
             return await rawResult.json();
         }
