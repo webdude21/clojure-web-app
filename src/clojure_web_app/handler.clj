@@ -36,5 +36,5 @@
       (wrap-defaults site-defaults)))
 
 (defn -main [& [port]]
-  (let [port (or port (env :port) 3000)]
+  (let [port (Integer. (or port (env :port) 3000))]
     (jetty/run-jetty (site #'app) {:port port :join? false})))
