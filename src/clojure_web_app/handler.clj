@@ -13,7 +13,7 @@
             [environ.core :refer [env]]
             [ring.middleware.defaults :refer [wrap-defaults site-defaults]]))
 
-(def fucks-given 0)
+(def fucks-given (atom 0))
 
 (defroutes app-routes
            (GET "/rest/fuel-near-me" [lat lon limit distance fuel]
@@ -21,9 +21,10 @@
                (response (service/nearby-fuel-prices lat lon limit distance fuel (get-ip-from request)))))
            (GET "/rest/my-location" []
              (fn [request] (response (service/location-by-ip (get-ip-from request)))))
-           (GET "/rest/fuck", [] (fn []
-                                   (do (def fucks-given (inc fucks-given))
-                                       {:status 201 :body {:fucksGiven fucks-given}})))
+           (GET "/rest/fuck", []
+             (fn [_]
+               (do (swap! fucks-given inc)
+                   (response {:fucksGiven @fucks-given}))))
            (GET "/" [] (clojure.java.io/resource "public/index.html"))
            (route/not-found (clojure.java.io/resource "public/404.html")))
 
