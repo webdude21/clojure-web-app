@@ -18,14 +18,13 @@
     c))
 
 (defn gas-station-line [kv-pair _ _]
-  (let [text (str (-> kv-pair key name string/capitalize) ": " (val kv-pair))]
-    (om/component
-      (dom/li nil text))))
+  (om/component
+    (dom/li nil str (-> kv-pair key name string/capitalize) ": " (val kv-pair))))
 
 (defn gas-station [props _ _]
-  (let [stuff (select-keys props [:name :city :address :distance])]
+  (let [gas-station-props (select-keys props [:name :city :address :distance])]
     (om/component
-      (dom/li nil (apply dom/ul nil (om/build-all gas-station-line stuff))))))
+      (dom/li nil (apply dom/ul nil (om/build-all gas-station-line gas-station-props))))))
 
 (defn gas-stations-list [{:keys [gas-stations]}]
   (om/component
