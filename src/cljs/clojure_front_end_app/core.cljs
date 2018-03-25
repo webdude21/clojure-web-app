@@ -1,4 +1,4 @@
-(ns core
+(ns clojure_front_end_app.core
   (:require-macros [cljs.core.async.macros :refer [go alt!]])
   (:require [goog.events :as events]
             [clojure.string :as string]
@@ -17,14 +17,21 @@
           (>! c (nth (nth (vec gas-stations) 6) 1))))
     c))
 
-(defn gas-station-line [kv-pair _ _]
-  (om/component
-    (dom/li nil str (-> kv-pair key name string/capitalize) ": " (val kv-pair))))
+(defn gas-station-line [kv-pair]
+  (let [span (partial dom/span nil)
+        name (-> kv-pair key name string/capitalize (str ": "))
+        val (val kv-pair)]
+    (om/component
+      (dom/li
+        #js {:className "name-value-pair"}
+        (span name) (span val)))))
 
-(defn gas-station [props _ _]
+(defn gas-station [props]
   (let [gas-station-props (select-keys props [:name :city :address :distance])]
     (om/component
-      (dom/li nil (apply dom/ul nil (om/build-all gas-station-line gas-station-props))))))
+      (dom/li
+        #js {:className "gas-station"}
+        (apply dom/ul nil (om/build-all gas-station-line gas-station-props))))))
 
 (defn gas-stations-list [{:keys [gas-stations]}]
   (om/component
@@ -38,7 +45,7 @@
       (go (while true
             (let [gas-stations (<! (fetch-gas-stations url))]
               (println gas-stations)
-              (om/update! app (assoc % :gas-stations gas-stations)))
+              (om/update! app (assoc app :gas-stations gas-stations)))
             (<! (timeout poll-interval)))))
     om/IRender
     (render [_]

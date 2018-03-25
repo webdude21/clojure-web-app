@@ -1,14 +1,28 @@
-.list-item {
+li {
     list-style-type: none;
 }
 
-.list-item ul {
+li ul {
     padding: 10px;
     list-style-type: none;
 }
 
-[v-cloak] {
-    display: none;
+.gas-station {
+    border: 3px dotted black;
+    margin: 5px;
+}
+
+.gas-station .name-value-pair {
+    display: flex;
+    justify-content: space-between;
+}
+
+.gas-station .name-value-pair :first-child {
+    color: red;
+}
+
+.gas-station .name-value-pair :last-child {
+    color: blue;
 }
 
 #map {

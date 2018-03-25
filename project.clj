@@ -18,16 +18,21 @@
                  [org.omcljs/om "1.0.0-beta1"]]
   :plugins [[lein-ring "0.9.7"]
             [lein-cljsbuild "1.1.7"]
-
-            [lein-pdo "0.1.1"]
+            [lein-figwheel "0.5.14"]
             [lein-environ "1.1.0"]]
-  :aliases {"up" ["pdo" "cljsbuild" "auto" "dev," "ring" "server-headless"]}
-  :cljsbuild {:builds [{:id           "dev"
-                        :source-paths ["src/cljs"]
-                        :compiler     {:output-to     "resources/public/js/app.js"
-                                       :output-dir    "resources/public/js/out"
+  :cljsbuild {:builds [{:compiler     {:asset-path    "js/out"
+                                       :main          "clojure_front_end_app.core"
                                        :optimizations :none
-                                       :source-map    true}}]}
+                                       :source-map    true
+                                       :output-to     "resources/public/js/app.js"
+                                       :output-dir    "resources/public/js/out"}
+                        :figwheel     {:websocket-host "localhost"}
+                        :id           "dev"
+                        :source-paths ["src/cljs"]}]}
+  :figwheel {:css-dirs     ["resources/public/styles"]
+             :hawk-options {:watcher :polling}
+             :ring-handler clojure-web-app.handler/app
+             :server-port  3000}
   :hooks [environ.leiningen.hooks]
   :uberjar-name "clojure-web-app-standalone.jar"
   :ring {:handler clojure-web-app.handler/app}
