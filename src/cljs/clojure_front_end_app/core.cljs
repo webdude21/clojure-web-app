@@ -8,6 +8,9 @@
             [cljs-http.client :as http]
             [clojure.string :as string]))
 
+(def app-state
+  (atom {}))
+
 (enable-console-print!)
 
 (defn get-position []
@@ -55,8 +58,8 @@
           (om/update! app (assoc app :gas-stations gas-stations)))))
     om/IRender
     (render [_]
-      (dom/h1 nil "Бензиностанции")
-      (om/build gas-stations-list app))))
+      (dom/h2 #js {:className "title"} "Бензиностанции"
+              (om/build gas-stations-list app)))))
 
 (defn om-app [app _]
   (om/component
@@ -68,8 +71,5 @@
                                         :limit    50
                                         :distance 50
                                         :fuel     "lpg"}}}))))
-
-(def app-state
-  (atom {}))
 
 (om/root om-app app-state {:target (.getElementById js/document "content")})

@@ -2,6 +2,10 @@ li {
     list-style-type: none;
 }
 
+ul {
+    padding: 5px;
+}
+
 li ul {
     padding: 10px;
     list-style-type: none;
@@ -23,6 +27,10 @@ li ul {
 
 .gas-station .name-value-pair :last-child {
     color: blue;
+}
+
+.title {
+    text-align: center;
 }
 
 #map {
