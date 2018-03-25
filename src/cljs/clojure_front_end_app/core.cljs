@@ -44,16 +44,15 @@
   (om/component
     (apply dom/ul nil (om/build-all gas-station gas-stations))))
 
-(defn gas-stations-box [app _ {:keys [url params poll-interval]}]
+(defn gas-stations-box [app _ {:keys [url params]}]
   (reify
     om/IWillMount
     (will-mount [_]
       (om/transact! app [:gas-stations] (fn [] []))
-      (go (while true
-            (let [pos-params (<! (get-position))
-                  gas-stations (<! (fetch-gas-stations url (merge params pos-params)))]
-              (om/update! app (assoc app :gas-stations gas-stations)))
-            (<! (timeout poll-interval)))))
+      (go
+        (let [pos-params (<! (get-position))
+              gas-stations (<! (fetch-gas-stations url (merge params pos-params)))]
+          (om/update! app (assoc app :gas-stations gas-stations)))))
     om/IRender
     (render [_]
       (dom/h1 nil "Бензиностанции")
@@ -63,13 +62,12 @@
   (om/component
     (dom/div nil
              (om/build gas-stations-box app
-                       {:opts {:url           "/rest/fuel-near-me"
-                               :poll-interval 1000000
-                               :params        {:lon      25.55
-                                               :lat      43.45
-                                               :limit    50
-                                               :distance 50
-                                               :fuel     "lpg"}}}))))
+                       {:opts {:url    "/rest/fuel-near-me"
+                               :params {:lon      25.55
+                                        :lat      43.45
+                                        :limit    50
+                                        :distance 50
+                                        :fuel     "lpg"}}}))))
 
 (def app-state
   (atom {}))
