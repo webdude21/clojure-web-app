@@ -10,11 +10,18 @@
 
 (enable-console-print!)
 
+(defn get-position []
+  (let [c (chan)
+        success (fn [position] (go (>! c {:lon (.-longitude js/position.coords)
+                                          :lat (.-latitude js/position.coords)})))]
+    (.getCurrentPosition (.-geolocation js/navigator) success) c))
+
 (defn fetch-gas-stations
-  [url]
+  [url query-params]
   (let [c (chan)]
-    (go (let [{gas-stations :body} (<! (http/get url))]
-          (>! c (nth (nth (vec gas-stations) 6) 1))))
+    (go
+      (let [{gas-stations :body} (<! (http/get url {:query-params query-params}))]
+        (>! c (nth (nth (vec gas-stations) 6) 1))))
     c))
 
 (defn gas-station-line [kv-pair]
@@ -37,14 +44,14 @@
   (om/component
     (apply dom/ul nil (om/build-all gas-station gas-stations))))
 
-(defn gas-stations-box [app _ {:keys [url poll-interval]}]
+(defn gas-stations-box [app _ {:keys [url params poll-interval]}]
   (reify
     om/IWillMount
     (will-mount [_]
       (om/transact! app [:gas-stations] (fn [] []))
       (go (while true
-            (let [gas-stations (<! (fetch-gas-stations url))]
-              (println gas-stations)
+            (let [pos-params (<! (get-position))
+                  gas-stations (<! (fetch-gas-stations url (merge params pos-params)))]
               (om/update! app (assoc app :gas-stations gas-stations)))
             (<! (timeout poll-interval)))))
     om/IRender
@@ -56,8 +63,13 @@
   (om/component
     (dom/div nil
              (om/build gas-stations-box app
-                       {:opts {:url           "/rest/fuel-near-me?lat=42.6713757&lon=23.2672629&limit=10&distance=10&fuel=lpg"
-                               :poll-interval 1000000}}))))
+                       {:opts {:url           "/rest/fuel-near-me"
+                               :poll-interval 1000000
+                               :params        {:lon      25.55
+                                               :lat      43.45
+                                               :limit    50
+                                               :distance 50
+                                               :fuel     "lpg"}}}))))
 
 (def app-state
   (atom {}))
