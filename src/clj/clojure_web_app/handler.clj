@@ -2,6 +2,7 @@
   (:require [compojure.core :refer :all]
             [clojure-web-app.request-utils :refer [get-ip-from]]
             [clojure-web-app.fuel-services :as service]
+            [ring.middleware.gzip :refer [wrap-gzip]]
             [ring.middleware.json :refer [wrap-json-response]]
             [ring.middleware.json :refer [wrap-json-body]]
             [ring.middleware.json :refer [wrap-json-params]]
@@ -33,7 +34,8 @@
       wrap-json-body
       wrap-json-params
       wrap-json-response
-      (wrap-defaults site-defaults)))
+      (wrap-defaults site-defaults)
+      wrap-gzip))
 
 (defn -main [& [port]]
   (let [port (Integer. (or port (env :port) 3000))]
