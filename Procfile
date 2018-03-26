@@ -1,1 +1,1 @@
-web: lein cljsbuild once && java $JVM_OPTS -cp target/clojure-web-app-standalone.jar clojure.main -m clojure-web-app.handler
+web: java $JVM_OPTS -cp target/clojure-web-app-standalone.jar clojure.main -m clojure-web-app.handler

@@ -32,7 +32,7 @@
                                        :output-dir    "resources/public/js/out"}}
                        {:id           "prod"
                         :source-paths ["src"]
-                        :compiler     {:output-to     "resources/public/js/app-prod.js"
+                        :compiler     {:output-to     "resources/public/scripts/app-prod.js"
                                        :optimizations :advanced
                                        :pretty-print  false}}]}
   :figwheel {:css-dirs     ["resources/public/styles"]
