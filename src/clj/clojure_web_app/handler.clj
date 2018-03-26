@@ -16,6 +16,8 @@
 
 (def fucks-given (atom 0))
 
+(def production (or (env :production) false))
+
 (defroutes app-routes
            (GET "/rest/fuel-near-me" [lat lon limit distance fuel]
              (fn [request]
@@ -26,7 +28,9 @@
              (fn [_]
                (do (swap! fucks-given inc)
                    (response {:fucksGiven @fucks-given}))))
-           (GET "/" [] (clojure.java.io/resource "public/index.html"))
+           (GET "/" [] (if production
+                         (clojure.java.io/resource "public/index-prod.html")
+                         (clojure.java.io/resource "public/index.html")))
            (route/not-found (clojure.java.io/resource "public/404.html")))
 
 (def app
