@@ -1,6 +1,5 @@
 (ns clojure-web-app.handler
   (:require [compojure.core :refer :all]
-            [clojure-web-app.request-utils :refer [get-ip-from]]
             [clojure-web-app.fuel-services :as service]
             [ring.middleware.gzip :refer [wrap-gzip]]
             [ring.middleware.json :refer [wrap-json-response]]
@@ -17,6 +16,11 @@
 (def fucks-given (atom 0))
 
 (def production (or (env :production) false))
+
+(defn get-ip-from [request]
+  (let [forwarded-for ((:headers request) "x-forwarded-for")
+        remote-addr (:remote-addr request)]
+    (or forwarded-for remote-addr)))
 
 (defroutes app-routes
            (GET "/rest/fuel-near-me" [lat lon limit distance fuel]

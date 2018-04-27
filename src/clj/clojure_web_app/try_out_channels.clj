@@ -8,7 +8,7 @@
 
 (defn async-get [url & r]
   (let [c (chan)
-        callback (fn [v] (put! c v))
+        callback #(put! c %)
         params (merge (or r {}) {:async? true})]
     (client/get url params callback callback)
     c))
